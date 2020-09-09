@@ -55,14 +55,14 @@ function epsilonCleenDelta(state,ch) {
 
 function toDFA(exp) {
     let aplhabets = [
-        'a','b','c'
+        // 'a','b','c'
     ];
-    // for(let i = 0; i < 26;i++){
-    //     let upper = (0x41 + i);
-    //     let lower = upper + 0x20;
-    //     aplhabets.push(String.fromCharCode(upper));
-    //     aplhabets.push(String.fromCharCode(lower));
-    // }
+    for(let i = 0; i < 26;i++){
+        let upper = (0x41 + i);
+        let lower = upper + 0x20;
+        aplhabets.push(String.fromCharCode(upper));
+        aplhabets.push(String.fromCharCode(lower));
+    }
     const transExp = insertExplicitConcatOperator(exp);
     const postfixExp = toPostfix(transExp);
     let nfa = toNFA(postfixExp);
@@ -133,7 +133,10 @@ function dfaSearch(dfa,word) {
 
     for(const ch of word) {
         currentState = currentState.transitions[ch]
+        if(currentState == undefined) return false
     }
+    
+    if(currentState == undefined) return false
 
     return currentState.isEnd == true
 }
