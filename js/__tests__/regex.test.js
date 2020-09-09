@@ -1,21 +1,21 @@
-const { createMatcher } = require('../src/regex');
-describe('createMatcher tests', () => {
+const { createNFAMatcher } = require('../src/regex');
+describe('createNFAMatcher tests', () => {
     test('from empty string should recognize only empty string', () => {
-        const match = createMatcher('');
+        const match = createNFAMatcher('');
         expect(match('')).toBeTruthy();
         expect(match('a')).toBeFalsy();
         expect(match(' ab')).toBeFalsy();
     });
 
     test('from a should recognize strings of arbitrary number of a', () => {
-        const match = createMatcher('a');
+        const match = createNFAMatcher('a');
         expect(match('')).toBeFalsy();
         expect(match('a')).toBeTruthy();
         expect(match('aaa')).toBeFalsy();
     });
 
     test('from a* should recognize strings of arbitrary number of a\'s', () => {
-        const match = createMatcher('a*');
+        const match = createNFAMatcher('a*');
         expect(match('')).toBeTruthy();
         expect(match('aaaa')).toBeTruthy();
         expect(match('aa')).toBeTruthy();
@@ -23,7 +23,7 @@ describe('createMatcher tests', () => {
     });
 
     test('from a? should recognize strings of exactly one or zero number of a\'s', () => {
-        const match = createMatcher('a?');
+        const match = createNFAMatcher('a?');
         expect(match('')).toBeTruthy();
         expect(match('a')).toBeTruthy();
         expect(match('aa')).toBeFalsy();
@@ -33,7 +33,7 @@ describe('createMatcher tests', () => {
     });
 
     test('from a+ should recognize strings of one or more number of a\'s', () => {
-        const match = createMatcher('a+');
+        const match = createNFAMatcher('a+');
         expect(match('')).toBeFalsy();
         expect(match('a')).toBeTruthy();
         expect(match('aa')).toBeTruthy();
@@ -43,7 +43,7 @@ describe('createMatcher tests', () => {
     });
 
     test('from a*b should recognize strings of arbitrary number of a\'s ending with b', () => {
-        const match = createMatcher('a*b');
+        const match = createNFAMatcher('a*b');
         expect(match('')).toBeFalsy();
         expect(match('aaaab')).toBeTruthy();
         expect(match('aab')).toBeTruthy();
@@ -53,7 +53,7 @@ describe('createMatcher tests', () => {
 
     // regex for all binary numbers divisible by 3
     test('from "(0|(1(01*(00)*0)*1)*)*" should recognize its language', () => {
-        const match = createMatcher('(0|(1(01*(00)*0)*1)*)*');
+        const match = createNFAMatcher('(0|(1(01*(00)*0)*1)*)*');
         expect(match('')).toBeTruthy();
         expect(match('0')).toBeTruthy();
         expect(match('00')).toBeTruthy();
@@ -66,7 +66,7 @@ describe('createMatcher tests', () => {
     });
 
     test('from "(a|b)*c" should recognize strings with arbitrary number of a\'s and b\'s ending with c', () => {
-        const match = createMatcher('(a|b)*c');
+        const match = createNFAMatcher('(a|b)*c');
         expect(match('c')).toBeTruthy();
         expect(match('ac')).toBeTruthy();
         expect(match('ababc')).toBeTruthy();
@@ -82,7 +82,7 @@ describe('createMatcher tests', () => {
     });
 
     test('from "abc|def" should recognize strings of abc or def', () => {
-        const match = createMatcher('abc|def');
+        const match = createNFAMatcher('abc|def');
         expect(match('abc')).toBeTruthy();
         expect(match('def')).toBeTruthy();
         expect(match('ab')).toBeFalsy();
@@ -90,7 +90,7 @@ describe('createMatcher tests', () => {
     });
 
     test('from "a(b*|c)" should recognize strings starting with a followed by b\'s or a single c', () => {
-        const match = createMatcher('a(b*|c)');
+        const match = createNFAMatcher('a(b*|c)');
         expect(match('ac')).toBeTruthy();
         expect(match('abbbb')).toBeTruthy();
         expect(match('ab')).toBeTruthy();

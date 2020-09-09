@@ -1,10 +1,14 @@
 const { insertExplicitConcatOperator,toPostfix } = require('./parser')
 
-function createState(isEnd) {
+let NFALABEL = 0;
+
+function createNFAState(isEnd) {
+
     return {
         isEnd,
-        transition: {},
-        epsilonTransitions: []
+        transitions: {},
+        epsilonTransitions: [],
+        label:NFALABEL++
     };
 }
 
@@ -17,20 +21,20 @@ function addEpsilonTransition(from,to) {
 //      a
 // from -> to
 function addTransition(from,to,symbol) {
-    from.transition[symbol] = to;
+    from.transitions[symbol] = to;
 }
 //        ε
 // start --> end
 function fromEpsilon() {
-    const start = createState(false);
-    const end = createState(true);
+    const start = createNFAState(false);
+    const end = createNFAState(true);
     addEpsilonTransition(start, end);
     return { start, end };
 }
 
 function fromSymbol(symbol) {
-    const start = createState(false);
-    const end = createState(true);
+    const start = createNFAState(false);
+    const end = createNFAState(true);
     addTransition(start, end, symbol);
 
     return { start, end };
@@ -44,11 +48,11 @@ function concat(first, second) {
 }
 
 function union(first, second) {
-    const start = createState(false);
+    const start = createNFAState(false);
     addEpsilonTransition(start, first.start);
     addEpsilonTransition(start, second.start);
 
-    const end = createState(true);
+    const end = createNFAState(true);
     addEpsilonTransition(first.end, end);
     first.end.isEnd = false;
     addEpsilonTransition(second.end, end);
@@ -58,8 +62,8 @@ function union(first, second) {
 }
 
 function closure(nfa) {
-    const start = createState(false);
-    const end   = createState(true);
+    const start = createNFAState(false);
+    const end   = createNFAState(true);
 
     addEpsilonTransition(start, end);
     addEpsilonTransition(start, nfa.start);
@@ -72,8 +76,8 @@ function closure(nfa) {
 }
 
 function zeroOrOne(nfa) {
-    const start = createState(false);
-    const end = createState(true);
+    const start = createNFAState(false);
+    const end = createNFAState(true);
     addEpsilonTransition(start,end);
     addEpsilonTransition(start,nfa.start);
 
@@ -84,8 +88,8 @@ function zeroOrOne(nfa) {
 }
 
 function oneMore(nfa) {
-    const start = createState(false);
-    const end = createState(true);
+    const start = createNFAState(false);
+    const end = createNFAState(true);
     addEpsilonTransition(start,nfa.start);
     addEpsilonTransition(nfa.end,nfa.start);
     addEpsilonTransition(nfa.end,end);
@@ -138,7 +142,8 @@ function addNextState(state, nextStates, visited) {
         nextStates.push(state);
     }
 }
-function search(nfa,word) {
+
+function nfaSearch(nfa,word) {
    
     let currentStates = [];
     addNextState(nfa.start,currentStates,[]);
@@ -146,7 +151,7 @@ function search(nfa,word) {
     for (const symbol of word){
         const nextStates = [];
         for (const state of currentStates) {
-            const nextState = state.transition[symbol];
+            const nextState = state.transitions[symbol];
 
             if (nextState) {
                 addNextState(nextState, nextStates, []);
@@ -159,6 +164,6 @@ function search(nfa,word) {
 }
 
 module.exports = {
-    search,
+    nfaSearch,
     toNFA
 }
