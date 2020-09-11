@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "java",
+            "name": "CodeLens (Launch) - App",
+            "request": "launch",
+            "mainClass": "org.blitz.regex.App",
+            "projectName": "toy"
+        },
+        {
             "type": "node",
             "request": "launch",
             "name": "Launch Program",

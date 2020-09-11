@@ -1,0 +1,58 @@
+<html><head><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/vditor@latest/dist/index.css"/>
+<script src="https://cdn.jsdelivr.net/npm/vditor@latest/dist/method.min.js"></script></head>
+<body><div class="vditor-reset" id="preview"><h1 id="从零开始实现正则表达式引擎0x00">从零开始实现正则表达式引擎0x00</h1>
+<ul>
+<li>系列长度： 7个章节</li>
+<li>Tags：<code>Automata</code>,<code>Regex</code></li>
+<li>实现语言：<code>Javascript</code>,<code>C++</code>,<code>Python3</code></li>
+</ul>
+<h2 id="理论准备">理论准备</h2>
+<h3 id="自动机--">自动机🤔️</h3>
+<h4 id="NFA-And-DFA">NFA And DFA</h4>
+<h4 id="从正则表达式开始">从正则表达式开始</h4>
+<h4 id="Regex-to-NFA">Regex to NFA</h4>
+<h4 id="NFA-to-DFA">NFA to DFA</h4>
+<h4 id="最小化DFA">最小化DFA</h4>
+<h2 id="实现技术预热">实现技术预热</h2>
+<h3 id="如何表示State">如何表示State</h3>
+<h3 id="如何表示Transition">如何表示Transition</h3>
+<h3 id="如何唯一确定对象标示">如何唯一确定对象标示</h3>
+<h3 id="closure---闭包算法">closure---闭包算法</h3>
+<h4 id="消除ℇ转换">消除ℇ转换</h4>
+<h4 id="深度优先搜索">深度优先搜索</h4>
+<h4 id="广度优先搜索">广度优先搜索</h4>
+<h4 id="不动点算法">不动点算法</h4>
+<h2 id="渐进式">渐进式</h2>
+<h3 id="为什么采取渐进式-">为什么采取渐进式？</h3>
+<ol>
+<li>渐进式有利于简化假设，从而降低实现难度</li>
+<li>从一个简易原型开始，一步步抽丝剥茧式的叠加更能体现探索的实质过程和乐趣。</li>
+<li>个人喜欢渐进式的学习方式和实现路径，有利于自己展开思路和读者一起体验这个过程。</li>
+</ol>
+<h2 id="起点">起点</h2>
+<blockquote>
+<p>天下大事必做于细</p>
+</blockquote>
+<h3 id="字符串匹配">字符串匹配</h3>
+<p>##</p>
+<h2 id="写作计划">写作计划</h2>
+<pre><code class="language-mermaid">gantt
+setion a
+</code></pre>
+</div>
+<script>
+    const previewElement = document.getElementById('preview')
+    Vditor.setContentTheme('dark', '/Applications/SiYuan.app/Contents/Resources/vditore/dist/css/content-theme');
+    Vditor.codeRender(previewElement, 'zh_CN');
+    Vditor.highlightRender({"enable":true,"lineNumber":false,"style":"native"}, previewElement, '/Applications/SiYuan.app/Contents/Resources/vditore');
+    Vditor.mathRender(previewElement, {
+        cdn: '/Applications/SiYuan.app/Contents/Resources/vditore',
+        math: {"engine":"MathJax","inlineDigit":false,"macros":{}},
+    });
+    Vditor.mermaidRender(previewElement, ".language-mermaid", '/Applications/SiYuan.app/Contents/Resources/vditore');
+    Vditor.graphvizRender(previewElement, '/Applications/SiYuan.app/Contents/Resources/vditore');
+    Vditor.chartRender(previewElement, '/Applications/SiYuan.app/Contents/Resources/vditore');
+    Vditor.mindmapRender(previewElement, '/Applications/SiYuan.app/Contents/Resources/vditore');
+    Vditor.abcRender(previewElement, '/Applications/SiYuan.app/Contents/Resources/vditore');
+    Vditor.mediaRender(previewElement);
+</script></body></html>
