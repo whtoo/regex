@@ -143,6 +143,37 @@ function addNextState(state, nextStates, visited) {
     }
 }
 
+function nfaToGraph(nfa) {
+    /// BFS travel nfa
+    let queue = [nfa.start];
+    let visitedEdges = new Set();
+    let epsilon = 'ℇ';
+    let graph = "digraph G {\n";
+    graph += "rankdir = LR;\n";
+    graph += "size = \"8,5\";\n";
+    graph += "node [shape=circle];\n";
+    while(queue.length > 0){
+        let node = queue.shift();
+        for(const n1 of node.epsilonTransitions){
+            if(!visitedEdges.has(n1.label+epsilon+node.label)){
+                visitedEdges.add(n1.label+epsilon+node.label)
+                graph += `LR_${node.label} -> LR_${n1.label} [label="${epsilon}"] ;\n`
+                queue.push(n1);
+            }
+        }
+        for(const ch in node.transitions){
+            let n2 = node.transitions[ch];
+            if(!visitedEdges.has(n2.label+ch+node.label)){
+                visitedEdges.add(n2.label+ch+node.label)
+                graph += `LR_${node.label} -> LR_${n2.label} [label="${ch}"] ;\n`
+                queue.push(n2);
+            }
+        }
+    }
+    graph += "\n}"
+    return graph;
+}
+
 function nfaSearch(nfa,word) {
    
     let currentStates = [];
@@ -165,5 +196,6 @@ function nfaSearch(nfa,word) {
 
 module.exports = {
     nfaSearch,
-    toNFA
+    toNFA,
+    nfaToGraph
 }

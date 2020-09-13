@@ -20,7 +20,7 @@ public class State {
     }
 
     public static void resetIDGenerator() {
-        State.IDGENERATOR = 0;
+        State.IDGENERATOR = 1;
     }
 
     @Override

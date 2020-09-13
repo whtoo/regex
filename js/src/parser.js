@@ -52,9 +52,9 @@ function toPostfix(exp) {
             let top = peek(operatorStack);
             while (operatorStack.length && top !== '('
             && operatorPrecedence[top] >= operatorPrecedence[token]) {
-            output += operatorStack.pop();
-            top = peek(operatorStack)
-        }
+                output += operatorStack.pop();
+                top = peek(operatorStack)
+            }
             operatorStack.push(token);
         } else {
             /// operand

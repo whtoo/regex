@@ -1,24 +1,27 @@
 const { toNFA } = require('./nfa')
 const { insertExplicitConcatOperator,toPostfix } = require('./parser');
+let DFAID = 0;
 
 function createDFAState(isEnd) {
     return {
         isEnd,
         nfaStateSet: [],
-        transitions: {}
+        transitions: {},
+        label:DFAID++
     };
 }
 
 function epsilonCleen(state){
     //  BFS
-    let espilonSet = [];
+    let espilonSet = [state];
     let queue = [state];
     while(queue.length > 0){
         let q = queue.shift();
-        espilonSet.push(q)
         for(const st of q.epsilonTransitions){
-            if(!espilonSet.find(val => st === val)){
+            if(espilonSet.findIndex(val => st.label === val.label) === -1){
                 queue.push(st);
+                espilonSet.push(st)
+                if(st.isEnd) state.isEnd = st.isEnd
             }
         }
     }
@@ -37,9 +40,9 @@ function epsilonCleenDelta(state,ch) {
         if(st.transitions[ch] != undefined) {
             const newStates = epsilonCleen(st.transitions[ch]);
             for(const tmpSt of newStates){
-                if(!tmpSet.find(val => val === tmpSt)){
+                if(tmpSet.findIndex(val => val.label === tmpSt.label) === -1){
                     tmpSet.push(tmpSt);
-                    if(!dfaState.isEnd && tmpSt.isEnd) dfaState.isEnd = tmpSt.isEnd;
+                    if(tmpSt.isEnd) dfaState.isEnd = tmpSt.isEnd;
                 }
             }
         }
@@ -54,21 +57,25 @@ function epsilonCleenDelta(state,ch) {
 }
 
 function toDFA(exp) {
-    let aplhabets = [
-        // 'a','b','c'
-    ];
-    for(let i = 0; i < 26;i++){
-        let upper = (0x41 + i);
-        let lower = upper + 0x20;
-        aplhabets.push(String.fromCharCode(upper));
-        aplhabets.push(String.fromCharCode(lower));
+    let aplhabets = new Set();
+    for(const ch of exp){
+        if(ch !== "(" && ch !== "." && ch !== "?" && ch !== ")" && ch !== "*" && ch !== "|") {
+            aplhabets.add(ch)
+        }
     }
+    // for(let i = 0; i < 26;i++){
+    //     let upper = (0x41 + i);
+    //     let lower = upper + 0x20;
+    //     aplhabets.push(String.fromCharCode(upper));
+    //     aplhabets.push(String.fromCharCode(lower));
+    // }
     const transExp = insertExplicitConcatOperator(exp);
     const postfixExp = toPostfix(transExp);
     let nfa = toNFA(postfixExp);
     //1. 从初始状态开始，进行下一状态等价集合的构造
     let q0 = createDFAState(false);
     q0.nfaStateSet = epsilonCleen(nfa.start);
+    q0.isEnd = nfa.start.isEnd;
 
     let workLst = new Array();
     let dfaStates = [q0];
@@ -87,7 +94,9 @@ function toDFA(exp) {
                     workLst.push(t);
                     q.transitions[ch] = t
                 } else {
-                    q.transitions[ch] = dfaStatesFind(dfaStates,t);
+                    let node = dfaStatesFind(dfaStates,t);
+                    node.isEnd = t.isEnd;
+                    q.transitions[ch] = node;
                 }
             }
         }
@@ -114,20 +123,39 @@ function dfaStateEqual(d1,d2){
 
     for(const st of d1.nfaStateSet){
         let ret = d2.nfaStateSet.find(cmp => {
-            for(const n1 of cmp.epsilonTransitions) {
-                if(!st.epsilonTransitions.find(n2 => n1.label === n2.label)) return undefined
+            if(cmp.label === st.label){
+                return true;
+            } else {
+                return false;
             }
-            for(const [key,val] in cmp.transitions) {
-                if(st.transitions[key] !== val) return undefined;
-            }
-            return cmp;
         })
         if(ret == undefined) return false;
     }
 
     return true
 }
-
+function dfaToGraph(dfa) {
+    /// BFS travel dfa
+    let queue = [dfa];
+    let visitedEdges = new Set();
+    let graph = "digraph G {\n";
+    graph += "rankdir = LR;\n";
+    graph += "size = \"8,5\";\n";
+    graph += "node [shape=circle];\n";
+    while(queue.length > 0){
+        let node = queue.shift();
+        for(const ch in node.transitions){
+            let n2 = node.transitions[ch];
+            if(!visitedEdges.has(n2.label+ch+node.label)){
+                visitedEdges.add(n2.label+ch+node.label)
+                graph += `LR_${node.label} -> LR_${n2.label} [label="${ch}"] ;\n`
+                queue.push(n2);
+            }
+        }
+    }
+    graph += "\n}"
+    return graph;
+}
 function dfaSearch(dfa,word) {
     let currentState = dfa;
 
@@ -143,5 +171,6 @@ function dfaSearch(dfa,word) {
 
 module.exports = {
     toDFA,
-    dfaSearch
+    dfaSearch,
+    dfaToGraph
 }
