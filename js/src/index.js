@@ -1,3 +1,4 @@
 const { createNFAMatcher,createDFAMatcher } = require('./regex')
-const match = createDFAMatcher('(0|(1(01*(00)*0)*1)*)*');
-console.log(match("0"));
+const match = createDFAMatcher('d?c*(a|b)*(b|c+)');
+const match2 = createNFAMatcher('d?c*(a|b)*(b|c+)');
+console.log(match("bb"));

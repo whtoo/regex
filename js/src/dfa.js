@@ -63,12 +63,6 @@ function toDFA(exp) {
             aplhabets.add(ch)
         }
     }
-    // for(let i = 0; i < 26;i++){
-    //     let upper = (0x41 + i);
-    //     let lower = upper + 0x20;
-    //     aplhabets.push(String.fromCharCode(upper));
-    //     aplhabets.push(String.fromCharCode(lower));
-    // }
     const transExp = insertExplicitConcatOperator(exp);
     const postfixExp = toPostfix(transExp);
     let nfa = toNFA(postfixExp);
@@ -80,9 +74,7 @@ function toDFA(exp) {
     let workLst = new Array();
     let dfaStates = [q0];
     workLst.push(q0);
-    // isEnd,
-    // nfaStateSet: [],
-    // transitions: []
+  
     while(workLst.length > 0){
         let q = workLst.shift();
         for(const ch of aplhabets) {
@@ -138,17 +130,25 @@ function dfaToGraph(dfa) {
     /// BFS travel dfa
     let queue = [dfa];
     let visitedEdges = new Set();
+    let acceptStateTags = new Set();
     let graph = "digraph G {\n";
     graph += "rankdir = LR;\n";
     graph += "size = \"8,5\";\n";
     graph += "node [shape=circle];\n";
     while(queue.length > 0){
         let node = queue.shift();
+        if(node == dfa) {
+            graph += `LR_${node.label} [style=filled,fillcolor = blue]\n`
+        }
         for(const ch in node.transitions){
             let n2 = node.transitions[ch];
             if(!visitedEdges.has(n2.label+ch+node.label)){
                 visitedEdges.add(n2.label+ch+node.label)
-                graph += `LR_${node.label} -> LR_${n2.label} [label="${ch}"] ;\n`
+                if(node.isEnd && !acceptStateTags.has(node.label)) {
+                    graph += `LR_${node.label} [shape=doublecircle,style=filled,fillcolor = blue];\n`
+                    acceptStateTags.add(node.label);
+                }
+                graph += `LR_${node.label} -> LR_${n2.label} [label="${ch}"];\n`
                 queue.push(n2);
             }
         }

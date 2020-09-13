@@ -6,7 +6,7 @@ function createNFAMatcher(exp) {
     const transExp = insertExplicitConcatOperator(exp);
     const postfixExp = toPostfix(transExp);
     const nfa = toNFA(postfixExp);
-    //console.log(nfaToGraph(nfa));
+    console.log(nfaToGraph(nfa));
     return word => nfaSearch(nfa, word);
 }
 

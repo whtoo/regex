@@ -147,16 +147,27 @@ function nfaToGraph(nfa) {
     /// BFS travel nfa
     let queue = [nfa.start];
     let visitedEdges = new Set();
+    let acceptStatesTag = new Set();
     let epsilon = 'ℇ';
     let graph = "digraph G {\n";
     graph += "rankdir = LR;\n";
     graph += "size = \"8,5\";\n";
     graph += "node [shape=circle];\n";
+    
     while(queue.length > 0){
         let node = queue.shift();
+        if(node == nfa.start){
+            graph += `LR_${node.label} [style=filled,fillcolor = blue];\n`
+        }
+
+        if(node.isEnd && !acceptStatesTag.has(node.label)){
+            graph += `LR_${node.label} [shape=doublecircle,style=filled,fillcolor = blue];\n`
+            acceptStatesTag.add(node.label);
+        }
         for(const n1 of node.epsilonTransitions){
             if(!visitedEdges.has(n1.label+epsilon+node.label)){
                 visitedEdges.add(n1.label+epsilon+node.label)
+                
                 graph += `LR_${node.label} -> LR_${n1.label} [label="${epsilon}"] ;\n`
                 queue.push(n1);
             }
