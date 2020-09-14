@@ -95,6 +95,13 @@ function toDFA(exp) {
     }
     return q0;
 }
+
+function minimizeDFA(dfa) {
+
+
+    return dfa;
+}
+
 function dfaStatesFind(dfaSets,state){
     for(const st of dfaSets) {
         if(dfaStateEqual(st,state)) return st;
