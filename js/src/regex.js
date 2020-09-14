@@ -1,6 +1,6 @@
 const { toNFA, nfaSearch,nfaToGraph } = require('./nfa');
 const { insertExplicitConcatOperator,toPostfix } = require('./parser');
-const { toDFA, dfaSearch,dfaToGraph } = require('./dfa');
+const { toDFA, dfaSearch,dfaToGraph,minimizeDFA } = require('./dfa');
 
 function createNFAMatcher(exp) {
     const transExp = insertExplicitConcatOperator(exp);
@@ -12,7 +12,7 @@ function createNFAMatcher(exp) {
 
 function createDFAMatcher(exp) {   
     const dfa = toDFA(exp);
-    console.log(dfaToGraph(dfa));
+    console.log(dfaToGraph(minimizeDFA(dfa)));
     return word => dfaSearch(dfa,word);
 }
 

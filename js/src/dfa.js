@@ -97,11 +97,59 @@ function toDFA(exp) {
 }
 
 function minimizeDFA(dfa) {
+    //1. 将dfa分为 N 和 A 两个集合。
+    //1.1 定义等价状态
+    let unAcceptSet = new Set();
+    let acceptSet = new Set();
+    let visitedEdges = new Set();
+    let queue = [dfa];
+    let states = new Map();
+    while(queue.length > 0){
+        let currentState = queue.shift();
+        currentState.nfaStateSet = []
+        for(const ch in currentState.transitions){
+            const dest = currentState.transitions[ch];
+            const edge = `LR_${currentState.label}--${ch}-->LR_${dest}`
+            if(!visitedEdges.has(edge)){
+                visitedEdges.add(edge);
+                queue.push(dest);
+            }
+            //标记当前状态
+            tagState(currentState,acceptSet,unAcceptSet);
+            states.set(currentState.label,currentState);
+        }
+    }
+    // 重新编码dfa的label
+    let newId = 0;
+    let totalSet = new Set(unAcceptSet);
 
+    for(const label of acceptSet){
+        totalSet.add(label);
+    }
 
+    for(const label of totalSet){
+        const state = states.get(label);
+        state.label = newId++;
+    }
+    let diff = new Array(newId)
+    diff.forEach(val => new Array(newId).fill(0));
+    let sIdx = new Map();
+
+    //1.划分正式开始
+
+    
     return dfa;
 }
 
+function tagState(state,acceptSet,unAcceptSet){
+    if(state.isEnd){
+        if(!acceptSet.has(state.label)){
+            acceptSet.add(state.label);
+        }
+    } else if(!unAcceptSet.has(state.label)){
+        unAcceptSet.add(state.label)
+    }
+}
 function dfaStatesFind(dfaSets,state){
     for(const st of dfaSets) {
         if(dfaStateEqual(st,state)) return st;
@@ -179,5 +227,6 @@ function dfaSearch(dfa,word) {
 module.exports = {
     toDFA,
     dfaSearch,
-    dfaToGraph
+    dfaToGraph,
+    minimizeDFA
 }
