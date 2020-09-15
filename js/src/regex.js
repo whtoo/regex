@@ -12,6 +12,7 @@ function createNFAMatcher(exp) {
 
 function createDFAMatcher(exp) {   
     const dfa = toDFA(exp);
+    console.log(dfaToGraph(dfa));
     console.log(dfaToGraph(minimizeDFA(dfa)));
     return word => dfaSearch(dfa,word);
 }
