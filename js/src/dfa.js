@@ -132,22 +132,22 @@ function minimizeDFA(start) {
     //1.1 定义等价状态
     let unAcceptSet = new Group(null,1);
     let acceptSet = new Group(null,0);
-    let visitedEdges = new Set();
+    let visitedNodes = new Set();
     let queue = [start];
     let states = new Map();
     while(queue.length > 0){
         let currentState = queue.shift();
         currentState.nfaStateSet = []
         states.set(currentState.label,currentState);
+        //标记当前状态
+        tagState(currentState,acceptSet,unAcceptSet);
         for(const ch in currentState.transitions){
             const dest = currentState.transitions[ch];
-            const edge = `LR_${currentState.label}--${ch}-->LR_${dest}`
-            if(!visitedEdges.has(edge)){
-                visitedEdges.add(edge);
+            if(!visitedNodes.has(dest.label)){
+                visitedNodes.add(dest.label);
                 queue.push(dest);
             }
-            //标记当前状态
-            tagState(currentState,acceptSet,unAcceptSet);
+            
         }
     }
     // 重新编码dfa的label
@@ -291,13 +291,20 @@ function minimize(groups,states) {
     * two states are unique or not
     * */
    function areStatesUnique(groups,state1,state2) {
-
+    let keyST1 = new Set(Object.keys(state1.transitions))
+    let keyST2 = new Set(Object.keys(state2.transitions))
+    if(keyST1.size !== keyST2.size){
+        return true
+    }
+    for(const k of keyST1){
+        if(!keyST2.has(k)) return true
+    }
     for (const ch in state1.transitions) {
         let s = state1.transitions[ch];
         let q = state2.transitions[ch];
-        if(q == undefined){
-            return false;
-        }
+        // Same input but different target
+        if(q == undefined) return true
+
         if (!containedBySameGroup(groups, s,q)) {
             return true;
         }
@@ -375,10 +382,8 @@ function removeUnreachableStates(groups,dfa,start){
 }
 function tagState(state,acceptSet,unAcceptSet){
     if(state.isEnd){
-        if(!acceptSet.contains(state.label)){
-            acceptSet.add(state.label);
-        }
-    } else if(!unAcceptSet.contains(state.label)){
+        acceptSet.add(state.label);
+    } else {
         unAcceptSet.add(state.label)
     }
 }
@@ -422,9 +427,10 @@ function dfaToGraph(dfa) {
     graph += "rankdir = LR;\n";
     graph += "size = \"8,5\";\n";
     graph += "node [shape=circle];\n";
+    
     while(queue.length > 0){
         let node = queue.shift();
-        if(node == dfa && !node.isEnd) {
+        if(node.label === dfa.label && !node.isEnd) {
             graph += `LR_${node.label} [style=filled,fillcolor = blue]\n`
         }
 
@@ -435,8 +441,8 @@ function dfaToGraph(dfa) {
 
         for(const ch in node.transitions){
             let n2 = node.transitions[ch];
-            if(!visitedEdges.has(n2.label+ch+node.label)){
-                visitedEdges.add(n2.label+ch+node.label)
+            if(!visitedEdges.has(node.label+ch+n2.label)){
+                visitedEdges.add(node.label+ch+n2.label)
                
                 graph += `LR_${node.label} -> LR_${n2.label} [label="${ch}"];\n`
                 queue.push(n2);

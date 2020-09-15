@@ -42,7 +42,7 @@ const exec = util.promisify(require('child_process').exec);
 //     'b':F,
 //     'c':G
 // }
-let dfa = toDFA('(a|b)(a|b*)');
+let dfa = toDFA('d?(c(a|b)*)*(b|c+)');
 let minDFA = minimizeDFA(dfa);
 
 function saveGraph(input,suffix){
@@ -62,5 +62,5 @@ function saveGraph(input,suffix){
     };
     dotGenerate();
 }
-saveGraph(dfa,'n');
+
 saveGraph(minDFA,'min');
