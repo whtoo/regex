@@ -134,6 +134,7 @@ function minimizeDFA(start) {
     let acceptSet = new Group(null,0);
     let visitedNodes = new Set();
     let queue = [start];
+    let originalStartLabel = start.label;
     let states = new Map();
     while(queue.length > 0){
         let currentState = queue.shift();
@@ -168,6 +169,9 @@ function minimizeDFA(start) {
         const label = totalSet.get(i);
         const state = states.get(label);
         state.label = newId++;
+        if(label === originalStartLabel){
+            originalStartLabel = state.label
+        }
         newStates.set(state.label,state);
         if(state.isEnd) acceptSet.add(state.label);
         else unAcceptSet.add(state.label);
@@ -182,7 +186,7 @@ function minimizeDFA(start) {
     let groups = new Array();
     groups.push(acceptSet);
     groups.push(unAcceptSet);
-    groups = removeUnreachableStates(groups,states,0);
+    groups = removeUnreachableStates(groups,states,originalStartLabel);
     groups = minimize(groups,states);
     //map all different groups to a specific integer that is there id
     let map = new Map();
@@ -224,7 +228,7 @@ function minimizeDFA(start) {
         newStates[src].transitions[comp[1]] = newStates[dest];
     }
 
-    return newStates[map.get(start.label)];
+    return newStates[map.get(originalStartLabel)];
 }
 /**
  * 
@@ -355,7 +359,7 @@ function containedBySameGroup(groups,  s1, s2) {
  * @param {Number} start 
  */
 function removeUnreachableStates(groups,dfa,start){
-    let reachable = new Array(dfa.length).fill(false);
+    let reachable = new Array(dfa.size).fill(false);
     reachable[start] = true;
     let queue = [];
     queue.push(dfa.get(start));
