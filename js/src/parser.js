@@ -34,7 +34,7 @@ const operatorPrecedence = {
 /**
  * 
  * @param {*} exp 
- * etc: c+(a.c|b)* --> c+ac.b|*.
+ * etc: c+(ac|b)* --> c+acb|*.
  */
 function toPostfix(exp) {
     let output = '';
