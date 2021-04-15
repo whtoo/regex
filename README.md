@@ -20,7 +20,7 @@
 
 ## 进度
 
-- [X] NFA与字符串匹配
-- [X] ℇ闭包与`cleenclosure`
-- [X] 子集构造法
-- [ ] DFA最小化
+- [x] NFA与字符串匹配
+- [x] ℇ闭包与`cleenclosure`
+- [x] 子集构造法
+- [x] DFA最小化
